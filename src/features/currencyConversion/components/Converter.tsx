@@ -9,9 +9,13 @@ import {
   converterFormSchema,
   type ConverterFormInput,
 } from '@/features/currencyConversion/types/converterSchema.ts'
+import type { ConvertApiResponse } from '@/features/currencyConversion/types/convertApiResponse.ts'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
 export const Converter = () => {
   const currencies = useCurrencies()
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<ConverterFormInput>({
     resolver: zodResolver(converterFormSchema),
@@ -23,8 +27,29 @@ export const Converter = () => {
     },
   })
 
-  function onSubmit(values: ConverterFormInput) {
-    console.log('Form values:', values)
+  const onSubmit = async ({
+    currencyFrom,
+    currencyTo,
+    amountFrom,
+  }: ConverterFormInput) => {
+    setIsLoading(true)
+
+    const params = new URLSearchParams({
+      from: currencyFrom,
+      to: currencyTo,
+      amount: amountFrom.toString(),
+    })
+
+    try {
+      const resp: ConvertApiResponse = await fetch(
+        `/api/currencybeacon/v1/convert?${params.toString()}`
+      ).then((req) => req.json())
+      form.setValue('amountTo', resp.response.value)
+    } catch (e) {
+      toast('Nastąpił błąd. Spróbuj ponownie później.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const currencyOptions = currencies.map(({ short_code, name }) => ({
@@ -72,8 +97,8 @@ export const Converter = () => {
           />
         </div>
 
-        <Button type="submit" className="w-full">
-          Przelicz
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? 'Przeliczanie...' : 'Przelicz'}
         </Button>
       </form>
     </Form>
