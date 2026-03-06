@@ -1,10 +1,4 @@
-interface BaseApiResponse<T = unknown> {
-  meta: {
-    code: number
-    disclaimer: string
-  }
-  response: T
-}
+import type { BaseApiResponse } from '@/types/baseApiResponse.ts'
 
 export const apiFetch = async <T extends BaseApiResponse>(
   endpoint: string,

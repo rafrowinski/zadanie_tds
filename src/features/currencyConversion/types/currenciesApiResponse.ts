@@ -1,9 +1,6 @@
 import type { Currency } from '@/features/currencyConversion/types/currency.ts'
+import type { BaseApiResponse } from '@/types/baseApiResponse.ts'
 
-export interface CurrenciesApiResponse {
-  meta: {
-    code: number
-    disclaimer: string
-  }
+export interface CurrenciesApiResponse extends BaseApiResponse {
   response: Array<Currency>
 }

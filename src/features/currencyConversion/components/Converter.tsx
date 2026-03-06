@@ -12,7 +12,7 @@ import {
 import type { ConvertApiResponse } from '@/features/currencyConversion/types/convertApiResponse.ts'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { apiFetch } from '@/lib/api'
+import { apiFetch } from '@/utils/api.ts'
 
 export const Converter = () => {
   const currencies = useCurrencies()

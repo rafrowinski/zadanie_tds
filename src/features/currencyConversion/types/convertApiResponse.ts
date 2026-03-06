@@ -1,5 +1,6 @@
-export interface ConvertApiResponse {
-  meta: { code: number; disclaimer: string }
+import type { BaseApiResponse } from '@/types/baseApiResponse.ts'
+
+export interface ConvertApiResponse extends BaseApiResponse {
   response: {
     timestamp: number
     date: string
