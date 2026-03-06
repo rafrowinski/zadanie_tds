@@ -12,6 +12,7 @@ import {
 import type { ConvertApiResponse } from '@/features/currencyConversion/types/convertApiResponse.ts'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { apiFetch } from '@/lib/api'
 
 export const Converter = () => {
   const currencies = useCurrencies()
@@ -41,9 +42,9 @@ export const Converter = () => {
     })
 
     try {
-      const resp: ConvertApiResponse = await fetch(
-        `/api/currencybeacon/v1/convert?${params.toString()}`
-      ).then((req) => req.json())
+      const resp = await apiFetch<ConvertApiResponse>(
+        `/convert?${params.toString()}`
+      )
       form.setValue('amountTo', resp.response.value)
     } catch (e) {
       toast('Nastąpił błąd. Spróbuj ponownie później.')
