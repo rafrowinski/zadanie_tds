@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form } from '@/components/ui/form'
+import { Form } from '@/components/ui/Form'
 import { FormInput } from '@/components/formUi/FormInput'
 import { FormSelect } from '@/components/formUi/FormSelect'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { useCurrencies } from '@/features/currencyConversion/hooks/useCurrencies.ts'
 import {
   converterFormSchema,
@@ -47,7 +47,7 @@ export const Converter = () => {
       )
       form.setValue('amountTo', resp.response.value)
     } catch (e) {
-      toast('Nastąpił błąd. Spróbuj ponownie później.')
+      toast('An error occurred. Please try again later.')
     } finally {
       setIsLoading(false)
     }
@@ -58,26 +58,30 @@ export const Converter = () => {
     label: `${short_code} - ${name}`,
   }))
 
+  const currencyFrom = form.watch('currencyFrom')
+  const currencyTo = form.watch('currencyTo')
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto w-full max-w-md space-y-6"
+        className="mx-auto w-full max-w-md min-w-md space-y-6"
       >
         <div className="grid grid-cols-2 gap-4 text-left">
           <FormSelect
             control={form.control}
             name="currencyFrom"
-            label="Z waluty"
+            label="From currency"
             options={currencyOptions}
-            placeholder="Wybierz..."
+            placeholder="Select..."
           />
           <FormInput
             control={form.control}
             name="amountFrom"
-            label="Kwota"
+            label="Amount"
             type="number"
             step="0.01"
+            suffix={currencyFrom}
           />
         </div>
 
@@ -85,21 +89,22 @@ export const Converter = () => {
           <FormSelect
             control={form.control}
             name="currencyTo"
-            label="Na walutę"
+            label="To currency"
             options={currencyOptions}
-            placeholder="Wybierz..."
+            placeholder="Select..."
           />
           <FormInput
             control={form.control}
             name="amountTo"
-            label="Wynik"
+            label="Result"
             type="number"
             readOnly
+            suffix={currencyTo}
           />
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Przeliczanie...' : 'Przelicz'}
+          {isLoading ? 'Converting...' : 'Convert'}
         </Button>
       </form>
     </Form>

@@ -6,8 +6,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from '@/components/ui/Form'
+import { Input } from '@/components/ui/Input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/InputGroup.tsx'
 
 interface FormInputProps<T extends FieldValues> extends Omit<
   ComponentProps<typeof Input>,
@@ -16,12 +21,14 @@ interface FormInputProps<T extends FieldValues> extends Omit<
   control: Control<T>
   name: Path<T>
   label: string
+  suffix?: string
 }
 
 export const FormInput = <T extends FieldValues>({
   control,
   name,
   label,
+  suffix,
   ...props
 }: FormInputProps<T>) => {
   return (
@@ -31,9 +38,14 @@ export const FormInput = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <Input {...field} {...props} />
-          </FormControl>
+          <InputGroup className="max-w-xs">
+            <FormControl>
+              <InputGroupInput {...field} {...props} />
+            </FormControl>
+            {suffix && (
+              <InputGroupAddon align="inline-end">{suffix}</InputGroupAddon>
+            )}
+          </InputGroup>
           <FormMessage />
         </FormItem>
       )}

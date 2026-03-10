@@ -5,14 +5,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@/components/ui/Form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/Select'
 
 export type SelectOption = {
   id: string
@@ -33,7 +33,7 @@ export const FormSelect = <T extends FieldValues>({
   name,
   label,
   options,
-  placeholder = 'Wybierz...',
+  placeholder = 'Select...',
   disabled = false,
 }: FormSelectProps<T>) => {
   return (
@@ -49,7 +49,7 @@ export const FormSelect = <T extends FieldValues>({
             disabled={disabled}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger data-testid={`${name}-trigger`}>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>

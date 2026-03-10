@@ -15,7 +15,7 @@ export class ErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError) {
-      return <div>Cos poszło nie tak</div>
+      return <div>Something went wrong</div>
     }
 
     return this.props.children
