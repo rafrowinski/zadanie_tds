@@ -13,6 +13,7 @@ import type { ConvertApiResponse } from '@/features/currencyConversion/types/con
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { apiFetch } from '@/utils/api.ts'
+import type { Currency } from '@/features/currencyConversion/types/currency.ts'
 
 export const Converter = () => {
   const currencies = useCurrencies()
@@ -21,8 +22,8 @@ export const Converter = () => {
   const form = useForm<ConverterFormInput>({
     resolver: zodResolver(converterFormSchema),
     defaultValues: {
-      currencyFrom: '',
-      currencyTo: '',
+      currencyFrom: undefined,
+      currencyTo: undefined,
       amountFrom: 0,
       amountTo: 0,
     },
@@ -36,8 +37,8 @@ export const Converter = () => {
     setIsLoading(true)
 
     const params = new URLSearchParams({
-      from: currencyFrom,
-      to: currencyTo,
+      from: currencyFrom.short_code,
+      to: currencyTo.short_code,
       amount: amountFrom.toString(),
     })
 
@@ -45,7 +46,7 @@ export const Converter = () => {
       const resp = await apiFetch<ConvertApiResponse>(
         `/convert?${params.toString()}`
       )
-      form.setValue('amountTo', resp.response.value)
+      form.setValue('amountTo', Math.round(resp.response.value * 100) / 100)
     } catch (e) {
       toast('An error occurred. Please try again later.')
     } finally {
@@ -53,13 +54,10 @@ export const Converter = () => {
     }
   }
 
-  const currencyOptions = currencies.map(({ short_code, name }) => ({
-    id: short_code,
-    label: `${short_code} - ${name}`,
-  }))
-
   const currencyFrom = form.watch('currencyFrom')
   const currencyTo = form.watch('currencyTo')
+
+  const getLabel = ({ short_code, name }: Currency) => `${short_code} - ${name}`
 
   return (
     <Form {...form}>
@@ -72,7 +70,9 @@ export const Converter = () => {
             control={form.control}
             name="currencyFrom"
             label="From currency"
-            options={currencyOptions}
+            options={currencies}
+            valueKey="short_code"
+            getLabel={getLabel}
             placeholder="Select..."
           />
           <FormInput
@@ -81,7 +81,7 @@ export const Converter = () => {
             label="Amount"
             type="number"
             step="0.01"
-            suffix={currencyFrom}
+            suffix={currencyFrom?.symbol}
           />
         </div>
 
@@ -90,7 +90,9 @@ export const Converter = () => {
             control={form.control}
             name="currencyTo"
             label="To currency"
-            options={currencyOptions}
+            options={currencies}
+            valueKey="short_code"
+            getLabel={getLabel}
             placeholder="Select..."
           />
           <FormInput
@@ -99,7 +101,7 @@ export const Converter = () => {
             label="Result"
             type="number"
             readOnly
-            suffix={currencyTo}
+            suffix={currencyTo?.symbol}
           />
         </div>
 
