@@ -38,7 +38,7 @@ export const FormInput = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <InputGroup className="max-w-xs">
+          <InputGroup>
             <FormControl>
               <InputGroupInput {...field} {...props} />
             </FormControl>

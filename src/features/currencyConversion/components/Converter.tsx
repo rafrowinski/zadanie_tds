@@ -69,9 +69,9 @@ export const Converter = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto w-full max-w-md min-w-md space-y-6"
+        className="mx-auto w-full max-w-md min-w-xs space-y-6"
       >
-        <div className="grid grid-cols-2 gap-4 text-left">
+        <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
           <FormSelect
             control={form.control}
             name="currencyFrom"
@@ -89,7 +89,7 @@ export const Converter = () => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 text-left">
+        <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
           <FormSelect
             control={form.control}
             name="currencyTo"
