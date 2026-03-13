@@ -14,9 +14,16 @@ import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { apiFetch } from '@/utils/api.ts'
 
-export const Converter = () => {
+export interface IProps {
+  conversionListLength?: number
+}
+
+export const Converter = ({ conversionListLength = 5 }: IProps) => {
   const currencies = useCurrencies()
   const [isLoading, setIsLoading] = useState(false)
+  const [currencyConvertionsList, setCurrencyConversionsList] = useState<
+    string[]
+  >([])
 
   const form = useForm<ConverterFormInput>({
     resolver: zodResolver(converterFormSchema),
@@ -45,7 +52,15 @@ export const Converter = () => {
       const resp = await apiFetch<ConvertApiResponse>(
         `/convert?${params.toString()}`
       )
-      form.setValue('amountTo', resp.response.value)
+      const amountTo = resp.response.value
+      form.setValue('amountTo', amountTo)
+
+      setCurrencyConversionsList((oldList) =>
+        [
+          `from: ${currencyFrom} to: ${currencyTo} amount: ${amountFrom} result: ${amountTo}`,
+          ...oldList,
+        ].slice(0, conversionListLength)
+      )
     } catch (e) {
       toast('An error occurred. Please try again later.')
     } finally {
@@ -66,51 +81,56 @@ export const Converter = () => {
   const currencyTo = form.watch('currencyTo')
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto w-full max-w-md min-w-xs space-y-6"
-      >
-        <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
-          <FormSelect
-            control={form.control}
-            name="currencyFrom"
-            label="From currency"
-            options={currencyOptions}
-            placeholder="Select..."
-          />
-          <FormInput
-            control={form.control}
-            name="amountFrom"
-            label="Amount"
-            type="number"
-            step="0.01"
-            suffix={currencyFrom}
-          />
-        </div>
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="mx-auto w-full max-w-md min-w-xs space-y-6"
+        >
+          <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
+            <FormSelect
+              control={form.control}
+              name="currencyFrom"
+              label="From currency"
+              options={currencyOptions}
+              placeholder="Select..."
+            />
+            <FormInput
+              control={form.control}
+              name="amountFrom"
+              label="Amount"
+              type="number"
+              step="0.01"
+              suffix={currencyFrom}
+            />
+          </div>
 
-        <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
-          <FormSelect
-            control={form.control}
-            name="currencyTo"
-            label="To currency"
-            options={currencyOptions}
-            placeholder="Select..."
-          />
-          <FormInput
-            control={form.control}
-            name="amountTo"
-            label="Result"
-            type="number"
-            readOnly
-            suffix={currencyTo}
-          />
-        </div>
+          <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2">
+            <FormSelect
+              control={form.control}
+              name="currencyTo"
+              label="To currency"
+              options={currencyOptions}
+              placeholder="Select..."
+            />
+            <FormInput
+              control={form.control}
+              name="amountTo"
+              label="Result"
+              type="number"
+              readOnly
+              suffix={currencyTo}
+            />
+          </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? 'Converting...' : 'Convert'}
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Converting...' : 'Convert'}
+          </Button>
+        </form>
+      </Form>
+      {currencyConvertionsList.map((currencyConversionItem) => (
+        <div>{currencyConversionItem}</div>
+      ))}
+    </>
   )
 }
