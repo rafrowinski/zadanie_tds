@@ -10,7 +10,7 @@ import {
   type ConverterFormInput,
 } from '@/features/currencyConversion/types/converterSchema.ts'
 import type { ConvertApiResponse } from '@/features/currencyConversion/types/convertApiResponse.ts'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { apiFetch } from '@/utils/api.ts'
 
@@ -53,10 +53,14 @@ export const Converter = () => {
     }
   }
 
-  const currencyOptions = currencies.map(({ short_code, name }) => ({
-    id: short_code,
-    label: `${short_code} - ${name}`,
-  }))
+  const currencyOptions = useMemo(
+    () =>
+      currencies.map(({ short_code, name }) => ({
+        id: short_code,
+        label: `${short_code} - ${name}`,
+      })),
+    [currencies]
+  )
 
   const currencyFrom = form.watch('currencyFrom')
   const currencyTo = form.watch('currencyTo')
