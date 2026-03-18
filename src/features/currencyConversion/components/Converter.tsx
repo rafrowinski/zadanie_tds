@@ -10,7 +10,7 @@ import {
   type ConverterFormInput,
 } from '@/features/currencyConversion/types/converterSchema.ts'
 import type { ConvertApiResponse } from '@/features/currencyConversion/types/convertApiResponse.ts'
-import { useMemo, useState } from 'react'
+import { useMemo, useOptimistic, useState } from 'react'
 import { toast } from 'sonner'
 import { apiFetch } from '@/utils/api.ts'
 
@@ -21,9 +21,16 @@ export interface IProps {
 export const Converter = ({ conversionListLength = 5 }: IProps) => {
   const currencies = useCurrencies()
   const [isLoading, setIsLoading] = useState(false)
-  const [currencyConvertionsList, setCurrencyConversionsList] = useState<
+  const [currencyConversionsList, setCurrencyConversionsList] = useState<
     string[]
   >([])
+
+  const [optimisticConversionList, addOptimisticConversion] = useOptimistic<
+    string[],
+    string
+  >(currencyConversionsList, (currentState, newConversionInfo) =>
+    [newConversionInfo, ...currentState].slice(0, conversionListLength)
+  )
 
   const form = useForm<ConverterFormInput>({
     resolver: zodResolver(converterFormSchema),
@@ -40,6 +47,9 @@ export const Converter = ({ conversionListLength = 5 }: IProps) => {
     currencyTo,
     amountFrom,
   }: ConverterFormInput) => {
+    addOptimisticConversion(
+      `from: ${currencyFrom} to: ${currencyTo} amount: ${amountFrom} result: Loading...`
+    )
     setIsLoading(true)
 
     const params = new URLSearchParams({
@@ -128,7 +138,7 @@ export const Converter = ({ conversionListLength = 5 }: IProps) => {
           </Button>
         </form>
       </Form>
-      {currencyConvertionsList.map((currencyConversionItem) => (
+      {optimisticConversionList.map((currencyConversionItem) => (
         <div>{currencyConversionItem}</div>
       ))}
     </>
